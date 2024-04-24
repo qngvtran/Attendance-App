@@ -1,0 +1,85 @@
+const eventSchema = {
+    id: "",// Unique identifier for the event
+    name: "",// Name of the event
+    description: "",// Description of the event
+    date: "",// Date of the event
+    startTime: "",// Start time of the event
+    attendees: [],// List of attendees for the event
+    status: "",// Status of the event (e.g., confirmed, canceled)
+    note: "",// Additional notes for the event
+  };
+  
+  const attendanceRecordSchema = {
+    id: "",// Unique identifier for the attendance record
+    eventId: "",// ID of the event this attendance record is for
+    username: "",// Username of the attendee
+    date: "",// Date of attendance confirmation
+    location: "",// Location of the attendee (optional)
+    status: "",// Status of attendance (e.g., present, absent)
+    reason: ""// Reason for absence (if applicable)
+  };
+  
+  let eventData = [];  
+  
+  function generateUniqueId() {
+    return 'ID_' + Date.now().toString(); 
+  }
+  
+  function createEvent(newEventDetails) {
+    const newEvent = {
+      ...eventSchema, 
+      id: generateUniqueId(), 
+      ...newEventDetails
+    };
+    eventData.push(newEvent); 
+    return newEvent;
+  }
+  
+
+  function addAttendee(eventId, username) {
+    const event = eventData.find(event => event.id === eventId);
+    if (event) {
+      event.attendees.push({ username });
+      return true;
+    } else {
+      return false;
+    }
+  }
+  
+  function confirmPresence(eventId, username, status) {
+    const event = eventData.find(event => event.id === eventId);
+    if (event) {
+      const attendee = event.attendees.find(a => a.username === username);
+      if (attendee) {
+        const attendanceRecord = {
+          ...attendanceRecordSchema,
+          id: generateUniqueId(),
+          eventId, 
+          username, 
+          date: new Date().toISOString().slice(0, 10),
+          status 
+        };
+  
+        console.log("Attendance Record:", attendanceRecord); 
+  
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      return false;
+    }
+  }
+  
+  const myEvent = createEvent({
+    name: "Team meeting",
+    description: "Tactical analysis",
+    date: "18-06-2024",
+    startTime: "18:00"
+  });
+  
+  addAttendee(myEvent.id, "frank.ocean");
+  addAttendee(myEvent.id, "emma.watson");
+  
+  confirmPresence(myEvent.id, "frank.ocean", "present"); 
+  confirmPresence(myEvent.id, "emma.watson", "absent"); 
